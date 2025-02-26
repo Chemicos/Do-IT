@@ -1,6 +1,7 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<h1 align="center"> 📝 DoIT</h1>
+<p align="center">
+  An intuitive task manager built with React, Tailwind CSS, and Firebase.
+</p>
 
 Currently, two official plugins are available:
 

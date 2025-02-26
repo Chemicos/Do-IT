@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { RotatingLines } from "react-loader-spinner"
 
-// eslint-disable-next-line react/prop-types
 export default function UsernameAlert({ onSave, isLoading }) {
     const [username, setUsername] = useState("")
 

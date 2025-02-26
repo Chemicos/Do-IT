@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebaseConfig";
 import { useEffect, useRef, useState } from "react";
 
-// eslint-disable-next-line react/prop-types
 export default function Navbar({ isDropdownOpen, toggleDropdown, username, onProfileClick }) {
   const [isHovered, setIsHovered] = useState(false)
   const dropDownRef = useRef(null)

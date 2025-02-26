@@ -7,8 +7,6 @@ import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import Confirmation from "./Confirmation";
 import { RotatingLines } from "react-loader-spinner";
 
-
-// eslint-disable-next-line react/prop-types
 export default function UserProfile({ onClose, user, username: initialUsername, onUsernameChange }) {
     const [username, setUsername] = useState(initialUsername)
     const [oldPassword, setOldPassword] = useState("")

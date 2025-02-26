@@ -5,7 +5,6 @@ import { auth, db } from "../../firebaseConfig"
 import { v4 as uuidv4 } from "uuid"
 import { doc, serverTimestamp, setDoc } from "firebase/firestore"
 
-// eslint-disable-next-line react/prop-types
 export default function AddSection({ onAddSection }) {
     const [isAdding, setIsAdding] = useState(false)
     const [sectionName, setSectionName] = useState("")

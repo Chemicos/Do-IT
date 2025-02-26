@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 
-// eslint-disable-next-line react/prop-types
 export default function SectionEdit({ sectionName, setSectionName, onSave, onCancel }) {
   const sectionEditRef = useRef(null)
 

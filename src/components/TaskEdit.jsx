@@ -2,7 +2,6 @@ import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useRef } from "react";
 
-// eslint-disable-next-line react/prop-types
 export default function TaskEdit({ taskName, taskDescription, setTaskName, setTaskDescription, onSave, onCancel }) {
   const taskEditRef = useRef(null)
 

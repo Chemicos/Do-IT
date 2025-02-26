@@ -24,7 +24,7 @@
     <b>Firebase: </b> For database and authentication.
   </li>
   <li>
-    <b>React Router DOM: </b> For managing navigation and routing withing the app.
+    <b>React Router DOM: </b> For managing navigation and routing within the app.
   </li>
   <li>
     <b>Font Awsome</b> For icon implementation.
@@ -52,8 +52,29 @@
   </li>
 
   <li>
-    <b>Create your </b>
+    <b>Set up Firebase:</b>
+    <br>
+    - Create a Firebase project in the <a href="https://console.firebase.google.com/"> Firebase Console</a>.
+    <br>
+    - Go to <b>Project settings</b> → <b>General</b> → <b>Your apps</b>.
+    <br>
+    - Copy the Firebase SDK config and replace the values in a new <code>.env.local</code> file.
     <br><br>
-    <pre><code>npm install or npm i</code></pre>
+    <b>Create a .env.local file in the root directory and add:</b>
+    <br><br>
+    <pre><code>
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+    </code></pre>
+  </li>
+
+  <li>
+    <b>Run the app:</b>
+    <br><br>
+    <pre><code>Npm run dev</code></pre>
   </li>
 </ol>

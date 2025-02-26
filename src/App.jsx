@@ -4,7 +4,6 @@ import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import TodoHome from './components/TodoHome'
 
 function App() {
-
   return (
     <>
       <Router>

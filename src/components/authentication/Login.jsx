@@ -4,11 +4,14 @@ import { signInWithEmailAndPassword } from "firebase/auth"
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { auth } from "../../../firebaseConfig"
+import { RotatingLines } from "react-loader-spinner"
 
 export default function Login() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [errorMessage, setErrorMessage] = useState("")
 
     const navigate = useNavigate()
 
@@ -18,23 +21,31 @@ export default function Login() {
         }
     }, [password])
 
-    const isDisabled = password == "" || email == "";
+    const isDisabled = password == "" || email == ""
 
     const handleLogin = async (e) => {
         e.preventDefault()
+        setIsLoading(true)
+        setErrorMessage("")
 
         try {
             await signInWithEmailAndPassword(auth, email, password)
             navigate("/")
         } catch (error) {
-            console.log("Error logging in: ", error)
+            if (error.code === "auth/invalid-credential") {
+                setErrorMessage("Failed to login. Please check your credentials.")
+            } else {
+                setErrorMessage("An unexpected error occurred. Please try again.")
+            }
+        } finally {
+            setIsLoading(false)
         }
     }
 
   return (
     <div>
       <div className="flex items-center justify-center min-h-screen bg-doit-darkgray">
-        <div className="w-full max-w-md p-8 space-y-6 md:shadow-md rounded-xl bg-doit-graybtn">
+        <div className="w-screen md:w-full md:max-w-md h-screen md:h-auto p-8 space-y-6 md:shadow-md md:rounded-xl md:bg-doit-graybtn">
             <h1 className="text-4xl font-bold text-center text-white">
                 Do<span className="text-green-500">IT</span>
             </h1>
@@ -79,14 +90,30 @@ export default function Login() {
                     </div>
                 </div>
 
-                <button 
-                    type="submit" 
-                    className={`w-full px-4 py-4 font-semibold text-white rounded-lg
-                    ${isDisabled ? "bg-gray-500 cursor-not-allowed opacity-50" : "bg-black hover:bg-doit-green"}`}
-                    disabled={isDisabled}
-                >
-                    Sign In
-                </button>
+                {errorMessage && 
+                    <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+                }
+            
+                {isLoading ? (
+                    <button className="w-full px-4 py-4 font-semibold text-white bg-black rounded-lg transition flex justify-center">
+                        <RotatingLines
+                            height="25"
+                            width="25"
+                            strokeColor="white"
+                            strokeWidth="5"
+                            visible={true}
+                        />
+                    </button>
+                ) : (
+                    <button 
+                        type="submit" 
+                        className={`w-full px-4 py-4 font-semibold text-white rounded-lg transition
+                        ${isDisabled ? "bg-gray-500 cursor-not-allowed opacity-50" : "bg-black hover:bg-doit-green"}`}
+                        disabled={isDisabled}
+                    >
+                        Sign In
+                    </button>
+                )}
             </form>
 
             <p className="text-sm text-center text-gray-300">

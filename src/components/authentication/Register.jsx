@@ -18,6 +18,8 @@ export default function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [errorMessage, setErrorMessage] = useState("")
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const navigate = useNavigate()
 
     const handlePasswordChange = (e) => {
@@ -38,38 +40,33 @@ export default function Register() {
 
     const isDisabled = password !== confirmPassword || password == "" || email == ""
 
-    const handleRegister = async (e) => {
-        e.preventDefault()
+    const handleRegister = async (username) => {
         if (isDisabled) return
 
+        setIsLoading(true)
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
-            setShowUsernamePopup(true)
-        } catch (error) {
-            setErrorMessage("Failed to register user. Please try again.")
-            console.log("Error registering: ", error)
-        }
-    }
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+            const user = userCredential.user;
 
-    const handleFinalRegister = async (username) => {
-        try {
-            const user = auth.currentUser
             await setDoc(doc(db, "users", user.uid), {
                 uid: user.uid,
                 email: user.email,
                 username: username,
                 createdAt: new Date(),
             })
-            navigate("/")
+
+            navigate("/") 
         } catch (error) {
-            setErrorMessage("Failed to save username. Please try again.")
-            console.log("Error saving username: ", error)
+            setErrorMessage("Failed to register user. Please try again.")
+            console.log("Error registering: ", error)
+        } finally {
+            setIsLoading(false)
         }
     }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-doit-darkgray">
-        <div className="w-full max-w-md p-8 space-y-6 md:shadow-md rounded-xl bg-doit-graybtn">
+        <div className="w-screen md:w-full md:max-w-md h-screen md:h-auto p-8 space-y-6 md:shadow-md rounded-xl md:bg-doit-graybtn">
             <h1 className="text-4xl font-bold text-center text-white">
                 Do<span className="text-green-500">IT</span>
             </h1>
@@ -80,7 +77,10 @@ export default function Register() {
                 Enter your email and password to create your account
             </p>
 
-            <form className="space-y-5" onSubmit={handleRegister}>
+            <form className="space-y-5" onSubmit={(e) => {
+                e.preventDefault()
+                setShowUsernamePopup(true)
+            }}>
                 <div>
                     <label className="block mb-2 text-sm font-medium text-gray-200">Email</label>
                     <input 
@@ -147,8 +147,8 @@ export default function Register() {
 
                 <button 
                     type="submit" 
-                    className={`w-full px-4 py-4 font-semibold text-white rounded-lg
-                    ${isDisabled ? "bg-gray-500 cursor-not-allowed opacity-50" : "bg-black hover:bg-doit-green"}`}
+                    className={`w-full px-4 py-4 font-semibold text-white rounded-lg transition duration-150
+                    ${isDisabled ? "bg-gray-500 cursor-not-allowed opacity-50" : "bg-black active:bg-slate-900 md:hover:bg-doit-green"}`}
                     disabled={isDisabled}
                 >
                     Sign Up
@@ -162,7 +162,10 @@ export default function Register() {
         </div>
 
         {showUsernamePopup && (
-            <UsernameAlert onSave={handleFinalRegister} />
+            <UsernameAlert 
+                onSave={handleRegister}
+                isLoading={isLoading}
+            />
         )}
     </div>
   )

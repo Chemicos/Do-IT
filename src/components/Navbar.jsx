@@ -1,50 +1,31 @@
 import { faAngleDown, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebaseConfig";
+import { auth } from "../../firebaseConfig";
 import { useEffect, useRef, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
 
 // eslint-disable-next-line react/prop-types
-export default function Navbar({ isDropdownOpen, toggleDropdown }) {
-  const [username, setUsername] = useState("")
+export default function Navbar({ isDropdownOpen, toggleDropdown, username, onProfileClick }) {
+  const [isHovered, setIsHovered] = useState(false)
   const dropDownRef = useRef(null)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-          try {
-              const userDoc = await getDoc(doc(db, "users", user.uid))
-              if (userDoc.exists()) {
-                  setUsername(userDoc.data().username)
-              } else {
-                console.error("User document does not exist")
-              }
-          } catch (error) {
-              console.error("Error fetching username:", error)
-          }
-      } else {
-          navigate("/login")
-      }
-  })
-
-    return () => unsubscribe()
-  }, [navigate])
+    if (!isDropdownOpen) {
+      setIsHovered(false)
+    }
+  }, [isDropdownOpen])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
-        toggleDropdown()
+        if (isDropdownOpen) {
+          toggleDropdown()
+        }
       }
     }
-
-    if (isDropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside)
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
+    document.addEventListener("mousedown", handleClickOutside)
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
@@ -64,16 +45,16 @@ export default function Navbar({ isDropdownOpen, toggleDropdown }) {
         <div 
           className="flex items-center space-x-4 relative cursor-pointer"
           onClick={toggleDropdown}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
-            <FontAwesomeIcon 
-                icon={faUser} 
-                className="text-3xl text-gray-400 "
-            />
+            
             <span className="font-semibold">{username}</span>
 
             <FontAwesomeIcon 
                 icon={faAngleDown}
-                className="text-xl text-doit-green cursor-pointer hover:opacity-70" 
+                className={`text-xl text-doit-green cursor-pointer hover:opacity-70 transform duration-150
+                  ${isHovered ? "rotate-180" : "rotate-0"} ${isDropdownOpen ? "rotate-180" : "rotate-0"}`} 
             />
 
             {isDropdownOpen && (
@@ -82,15 +63,17 @@ export default function Navbar({ isDropdownOpen, toggleDropdown }) {
                   ref={dropDownRef}
                 >
                 <button 
-                  disabled={true} 
-                  className="flex flex-row items-center space-x-3 cursor-not-allowed text-white py-2 px-2 w-[90%] rounded-lg"
+                  className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg
+                  transition duration-150"
+                  onClick={(e) => {e.stopPropagation(); onProfileClick()}}
                 >
                   <FontAwesomeIcon icon={faUser} className="text-doit-green" />
                   <span>Profile</span>
                 </button>
     
                 <button 
-                  className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg"
+                  className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg
+                  transition duration-150"
                   onClick={handleLogout}
                 >
                   <FontAwesomeIcon icon={faAngleDown} className="text-doit-green" />

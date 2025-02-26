@@ -1,8 +1,26 @@
+import { useEffect, useRef } from "react"
 
 // eslint-disable-next-line react/prop-types
 export default function SectionEdit({ sectionName, setSectionName, onSave, onCancel }) {
+  const sectionEditRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sectionEditRef.current && !sectionEditRef.current.contains(event.target)) {
+        onCancel()
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [onCancel])
   return (
-    <div className="flex flex-col w-72 items center space-y-2">
+    <div 
+      ref={sectionEditRef}
+      className="section-edit-modal flex flex-col w-72 space-y-2"
+    >
       <input 
         type="text" 
         value={sectionName}
@@ -22,7 +40,8 @@ export default function SectionEdit({ sectionName, setSectionName, onSave, onCan
 
         <button 
           onClick={onCancel} 
-          className="text-gray-400 duration-150 hover:text-white px-4 py-2 hover:bg-doit-graybtn rounded-lg"
+          className="text-gray-400 transition duration-150 active:bg-doit-darkgray active:text-white px-4 py-2 rounded-lg
+          md:hover:bg-doit-graybtn md:hover:text-white"
         >
             Cancel
         </button>

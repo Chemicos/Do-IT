@@ -17,6 +17,9 @@ export default {
       borderColor: {
         'doit-grayborder': '#4D4D4D',
         'doit-green': '#50AA02'
+      },
+      ringColor: {
+        'doit-green': '#50AA02'
       }
     },
   },

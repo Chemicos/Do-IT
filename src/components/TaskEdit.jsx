@@ -1,11 +1,29 @@
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useRef } from "react";
 
 // eslint-disable-next-line react/prop-types
 export default function TaskEdit({ taskName, taskDescription, setTaskName, setTaskDescription, onSave, onCancel }) {
+  const taskEditRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (taskEditRef.current && !taskEditRef.current.contains(event.target)) {
+        onCancel()
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [onCancel])
   return (
-      <div className="flex p-3 justify-between border border-doit-grayborder rounded-lg">
-          <div className="flex flex-col">
+      <div
+        ref={taskEditRef}
+        className="flex p-3 justify-between border border-doit-grayborder rounded-lg"
+      >
+          <div className="flex flex-col w-full">
             <input 
               type="text"
               placeholder="Task name"

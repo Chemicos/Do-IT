@@ -109,6 +109,5 @@ export default function ShowSectionBar({ sections = [], onSelectSection, activeS
             )}
         </div>
     </div>
-
   )
 }

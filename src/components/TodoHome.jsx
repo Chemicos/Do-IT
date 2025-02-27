@@ -3,7 +3,7 @@ import AddSection from "./AddSection";
 import Navbar from "./Navbar";
 import Section from "./Section";
 import { auth, db } from "../../firebaseConfig";
-import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import UserProfile from "./UserProfile";
 import { useNavigate } from "react-router-dom";
@@ -64,7 +64,9 @@ export default function TodoHome() {
         try {
           const q = query(
             collection(db, "sections"),
-            where("userId", "==", user.uid)
+            where("userId", "==", user.uid),
+            orderBy("isImportant", "desc"),
+            orderBy("createdAt", "desc")
           )
 
           const querySnapshot = await getDocs(q);
@@ -161,15 +163,6 @@ export default function TodoHome() {
     })
   }
 
-  // const handleDeleteSection = async (sectionId) => {
-  //   try {
-  //     await deleteDoc(doc(db, "sections", sectionId))
-  //     setSections((prevSections) => prevSections.filter(section => section.id !== sectionId))
-  //   } catch (error) {
-  //     console.error("Error deleting section:", error)
-  //   }
-  // }
-
   const handleDeleteSectionClick = (sectionId) => {
     const section = sections.find((s) => s.id === sectionId)
     setSectionToDelete(section)
@@ -181,7 +174,21 @@ export default function TodoHome() {
 
     try {
       await deleteDoc(doc(db, "sections", sectionToDelete.id))
-      setSections((prevSections) => prevSections.filter(section => section.id !== sectionToDelete.id))
+      setSections((prevSections) => {
+        const updatedSections = prevSections.filter(
+          (section) => section.id !== sectionToDelete.id
+        )
+  
+        const deletedIndex = prevSections.findIndex(
+          (section) => section.id === sectionToDelete.id
+        )
+  
+        const nextActiveSection = updatedSections[deletedIndex] || updatedSections[deletedIndex - 1] || null
+  
+        setActiveSectionId(nextActiveSection ? nextActiveSection.id : null)
+  
+        return updatedSections
+      })
 
       setShowConfirmDelete(false)
       setSectionToDelete(null)
@@ -266,8 +273,7 @@ export default function TodoHome() {
               <Oval
                 visible={true}
                 height="80"
-                width="80"
-                strokeWidth="4"
+                width="80"              
                 color="#4fa94d"
                 ariaLabel="oval-loading"
               />

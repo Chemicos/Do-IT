@@ -51,6 +51,7 @@ export default function AddSection({ onAddSection }) {
         if (sectionName.trim()) {
             try {
                 const sectionId = uuidv4()
+                const localTimestamp = Date.now()
                 const sectionData = {
                     sectionId: sectionId,
                     userId: auth.currentUser.uid,
@@ -60,7 +61,7 @@ export default function AddSection({ onAddSection }) {
                 }
                 await setDoc(doc(db, "sections", sectionId), sectionData)
     
-                onAddSection(sectionData)
+                onAddSection({ ...sectionData, createdAt: {seconds: localTimestamp / 1000} })
                 setSectionName("")
                 setIsAdding(false)
             } catch (error) {

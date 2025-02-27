@@ -224,149 +224,146 @@ export default function Section({ sectionId, sectionName: initialSectionName, is
   }
 
   return (
-    <div className="flex flex-col mx-auto space-y-4 rounded-lg w-72 md:w-full h-14 md:h-full">
-      <div className="flex items-center justify-between w-full md:w-[300px] space-x-1">
-        <div className="flex items-center space-x-2">
-          {isEditing ? (
-            <SectionEdit 
-              sectionName={sectionName}
-              setSectionName={setSectionName}
-              onSave={handleSaveEdit}
-              onCancel={handleCancelEdit}
-            />
-          ) : (
-            <>
-              {isImportant && (
-                <FontAwesomeIcon 
-                  icon={faThumbTack} 
-                  className="text-doit-green text-lg ml-2" 
-                  title="Important"
-                />
-              )}
-            
-              <h3 className="text-white text-lg font-semibold">
-                {sectionName.length > 15 ? `${sectionName.slice(0, 15)}...` : sectionName}
-              </h3>
-
-              <span className="text-gray-400 font-semibold">{tasks.length}/10</span>
-            </>
-          )}
-        </div>
-
-        <div className="relative">
-          <FontAwesomeIcon 
-              icon={faEllipsis}
-              className={`${isEditing ? "hidden" : ""} 
-              text-doit-green text-xl cursor-pointer active:bg-doit-graybtn p-2 rounded-lg duration-150 
-              md:hover:bg-doit-graybtn`
-              }
-              onClick={toggleDropdown}
+    <div className="flex flex-col mx-auto space-y-4 rounded-lg w-72 md:w-full h-full">
+    <div className="flex items-center justify-between w-full md:w-[300px] space-x-1">
+      <div className="flex items-center space-x-2">
+        {isEditing ? (
+          <SectionEdit 
+            sectionName={sectionName}
+            setSectionName={setSectionName}
+            onSave={handleSaveEdit}
+            onCancel={handleCancelEdit}
           />
+        ) : (
+          <>
+            {isImportant && (
+              <FontAwesomeIcon 
+                icon={faThumbTack} 
+                className="text-doit-green text-lg ml-2" 
+                title="Important"
+              />
+            )}
+          
+            <h3 className="text-white text-lg font-semibold">
+              {sectionName.length > 15 ? `${sectionName.slice(0, 15)}...` : sectionName}
+            </h3>
 
-          {isDropdownOpen && (
-            <div ref={dropdownRef} className="flex flex-col items-center absolute right-0 py-2 w-60 border border-doit-grayborder bg-doit-graybtn rounded-lg z-10">
-              <button 
-                className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg
-                transition duration-150"
-                onClick={() => {
-                  isImportant ? handleUndoImportant() : handleMarkAsImportant();
-                  toggleDropdown(null)
-                }}
-              >
-                <FontAwesomeIcon icon={faThumbTack} className="text-doit-green" />
-                <span>{isImportant ?  "Unmark" : "Mark"}</span>
-              </button>
-
-              <button 
-                className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg
-                transition duration-150"
-                onClick={handleEditClick}
-              >
-                <FontAwesomeIcon icon={faPen} className="text-doit-green" />
-                <span>Edit</span>
-              </button>
-
-              <button 
-                className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg
-                transition duration-150"
-                onClick={() => {
-                  onDeleteSection(sectionId, sectionName)
-                  toggleDropdown(null)
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} className="text-red-500" />
-                <span className="text-red-500">Delete</span>
-              </button>
-            </div>
-          )}
-        </div>
+            <span className="text-gray-400 font-semibold">{tasks.length}/10</span>
+          </>
+        )}
       </div>
 
-      <div className="flex flex-col h-[550px] md:h-full">
-        <div className={`flex-1 overflow-y-auto space-y-4 pr-2 transition-all duration-300 ${isEditing ? "max-h-[440px] md:max-h-full" : ""}`}>
-          {isLoading ? (
-            <div className="flex items-center justify-center w-full h-full">
-              <Oval 
-                visible={true}
-                height="80"
-                width="80"
-                color="#4fa94d"
-                ariaLabel="oval-loading"
-              />
-            </div>
-          ) : tasks.length === 0 ? (
-            <div className="flex text-gray-400 text-lg">
-              Let&apos;s add some tasks.
-            </div>
-          ) : (
-            tasks.map((task, index) => (
-              isEditingTask === index ? (
-                <TaskEdit 
-                  key={index}
-                  taskName={taskName}
-                  taskDescription={taskDescription}
-                  setTaskName={setTaskName}
-                  setTaskDescription={setTaskDescription}
-                  onSave={handleSaveEditTask}
-                  onCancel={handleCancelEdit}
-                />
-              ) : (
-                <div 
-                  key={task.taskId} 
-                  className="flex items-center justify-between p-3 bg-doit-graybtn rounded-lg
-                  hover:bg-opacity-70 cursor-pointer"
-                >
-                  <div className="w-full" 
-                    onClick={() => handleDeleteTask(task)}
-                    onMouseEnter={() => setHoveredTask(task.taskId)}
-                    onMouseLeave={() => setHoveredTask(null)}
-                  >
-                    <h4 className={`text-lg ${hoveredTask === task.taskId ? "line-through text-doit-green" : "text-white"}`}>
-                      {task.name}
-                    </h4>
-                    <p className={`text-sm ${hoveredTask === task.taskId ? "line-through text-doit-green" : "text-gray-400"}`}>
-                      {task.description}
-                    </p>
-                  </div>
-      
-                  <FontAwesomeIcon 
-                    icon={faPen} 
-                    className="text-doit-green cursor-pointer p-2 rounded-lg h-5 w-5 hover:bg-doit-darkgray duration-150"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEditTask(index)
-                    }}
-                  />
-                </div>
-              )
-            ))
-          )}
-        </div>
+      <div className="relative">
+        <FontAwesomeIcon 
+          icon={faEllipsis}
+          className={`${isEditing ? "hidden" : ""} 
+          text-doit-green text-xl cursor-pointer active:bg-doit-graybtn p-2 rounded-lg duration-150 
+          md:hover:bg-doit-graybtn`
+          }
+          onClick={toggleDropdown}
+        />
 
+        {isDropdownOpen && (
+          <div ref={dropdownRef} className="flex flex-col items-center absolute right-0 py-2 w-60 border border-doit-grayborder bg-doit-graybtn rounded-lg z-10">
+            <button 
+              className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg transition duration-150"
+              onClick={() => {
+                isImportant ? handleUndoImportant() : handleMarkAsImportant()
+                toggleDropdown(null)
+              }}
+            >
+              <FontAwesomeIcon icon={faThumbTack} className="text-doit-green" />
+              <span>{isImportant ? "Unmark" : "Mark"}</span>
+            </button>
+
+            <button 
+              className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg transition duration-150"
+              onClick={handleEditClick}
+            >
+              <FontAwesomeIcon icon={faPen} className="text-doit-green" />
+              <span>Edit</span>
+            </button>
+
+            <button 
+              className="flex flex-row items-center space-x-3 text-white py-2 px-2 w-[90%] hover:bg-doit-darkgray rounded-lg transition duration-150"
+              onClick={() => {
+                onDeleteSection(sectionId, sectionName)
+                toggleDropdown(null)
+              }}
+            >
+              <FontAwesomeIcon icon={faTrash} className="text-red-500" />
+              <span className="text-red-500">Delete</span>
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <div className={`flex-1 overflow-y-auto space-y-4 pr-2 transition-all duration-300 ${isEditing ? "max-h-[440px] md:max-h-full" : ""}`}>
+        {isLoading ? (
+          <div className="flex items-center justify-center w-full h-full">
+            <Oval 
+              visible={true}
+              height="80"
+              width="80"
+              color="#4fa94d"
+              ariaLabel="oval-loading"
+            />
+          </div>
+        ) : tasks.length === 0 ? (
+          <div className="flex text-gray-400 text-lg">
+            Let&apos;s add some tasks.
+          </div>
+        ) : (
+          tasks.map((task, index) => (
+            isEditingTask === index ? (
+              <TaskEdit 
+                key={index}
+                taskName={taskName}
+                taskDescription={taskDescription}
+                setTaskName={setTaskName}
+                setTaskDescription={setTaskDescription}
+                onSave={handleSaveEditTask}
+                onCancel={handleCancelEdit}
+              />
+            ) : (
+              <div 
+                key={task.taskId} 
+                className="flex items-center justify-between p-3 bg-doit-graybtn rounded-lg hover:bg-opacity-70 cursor-pointer"
+              >
+                <div className="w-full" 
+                  onClick={() => handleDeleteTask(task)}
+                  onMouseEnter={() => setHoveredTask(task.taskId)}
+                  onMouseLeave={() => setHoveredTask(null)}
+                >
+                  <h4 className={`text-lg ${hoveredTask === task.taskId ? "line-through text-doit-green" : "text-white"}`}>
+                    {task.name}
+                  </h4>
+                  <p className={`text-sm ${hoveredTask === task.taskId ? "line-through text-doit-green" : "text-gray-400"}`}>
+                    {task.description}
+                  </p>
+                </div>
+
+                <FontAwesomeIcon 
+                  icon={faPen} 
+                  className="text-doit-green cursor-pointer p-2 rounded-lg h-5 w-5 hover:bg-doit-darkgray duration-150"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleEditTask(index)
+                  }}
+                />
+              </div>
+            )
+          ))
+        )}
+      </div>
+
+      <div className="mt-auto">
         {isAddingTask ? (
           <div 
             ref={addTaskRef}
-            className="flex p-3 justify-between border md:w-[300px] border-doit-grayborder rounded-lg mt-4"
+            className="flex p-3 justify-between border md:w-[370px] border-doit-grayborder rounded-lg mt-4"
           >
             <div className="flex flex-col">
               <input 
@@ -374,38 +371,37 @@ export default function Section({ sectionId, sectionName: initialSectionName, is
                 placeholder="Task name"
                 value={taskName}
                 onChange={(e) => setTaskName(e.target.value)}
-                className="w-full bg-transparent text-white rounded-lg focus:outline-none placeholder:text-lg text-lg
-                pr-2" 
+                className="w-full bg-transparent text-white rounded-lg focus:outline-none placeholder:text-lg text-lg pr-2" 
               />
               <input 
                 type="text" 
                 placeholder="Description (optional)"
                 value={taskDescription}
                 onChange={(e) => setTaskDescription(e.target.value)}
-                className="w-full bg-transparent text-gray-400 rounded-lg focus:outline-none placeholder:text-sm text-sm
-                pr-2"
+                className="w-full bg-transparent text-gray-400 rounded-lg focus:outline-none placeholder:text-sm text-sm pr-2"
               />
             </div>
 
             <div className="flex space-x-4">
               <button onClick={handleCancelTask}>
-              <FontAwesomeIcon icon={faXmark} className="text-gray-400 text-2xl cursor-pointer hover:text-white" /> 
+                <FontAwesomeIcon icon={faXmark} className="text-gray-400 text-2xl cursor-pointer hover:text-white" /> 
               </button>
 
               <button onClick={handleSaveTask}>
-              <FontAwesomeIcon icon={faCheck} className="text-doit-green text-2xl cursor-pointer hover:opacity-50" />
+                <FontAwesomeIcon icon={faCheck} className="text-doit-green text-2xl cursor-pointer hover:opacity-50" />
               </button>
-              </div>
+            </div>
           </div>
         ) : (
           tasks.length < 10 ? (
-            <button onClick={handleAddTask} className="flex items-center md:w-72 space-x-2 text-gray-400 hover:text-doit-green mt-4">
+            <button onClick={handleAddTask} className="flex items-center space-x-2 text-gray-400 hover:text-doit-green active:text-doit-green mt-4">
               <FontAwesomeIcon icon={faPlus} className="text-doit-green" />
-              <span className="text-lg">Add task</span>
+              <span className="text-xl">Add task</span>
             </button>
           ) : null
         )}
       </div>
     </div>
+  </div>
   )
 }

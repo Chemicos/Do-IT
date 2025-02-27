@@ -21,7 +21,7 @@ export default function DeleteConfirm({ sectionName , onConfirm, onCancel }) {
 
         <div className="flex justify-center space-x-4">
           <button 
-            className="px-4 py-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600"
+            className="px-4 py-2 rounded-lg text-white hover:bg-doit-darkgray active:bg-doit-darkgray"
             onClick={onCancel}
           >
             Cancel

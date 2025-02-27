@@ -15,7 +15,7 @@ export default function SectionSidebar({ sections, activeSectionId, onSelectSect
                     className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition active:bg-doit-graybtn
                        ${section.id === activeSectionId ? "bg-doit-graybtn" : ""} `}                    
                 >
-                    <div 
+                    <div className="w-full"
                         onClick={() => {
                             onSelectSection(section.id)
                             closeSidebar()

@@ -75,6 +75,6 @@ VITE_FIREBASE_APP_ID=your_app_id
   <li>
     <b>Run the app:</b>
     <br><br>
-    <pre><code>Npm run dev</code></pre>
+    <pre><code>npm run dev</code></pre>
   </li>
 </ol>

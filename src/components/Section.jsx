@@ -224,7 +224,7 @@ export default function Section({ sectionId, sectionName: initialSectionName, is
   }
 
   return (
-    <div className="flex flex-col mx-auto space-y-4 rounded-lg w-72 md:w-full h-full">
+  <div className="flex flex-col mx-auto space-y-4 rounded-lg w-72 md:w-full h-[500px] md:h-full">
     <div className="flex items-center justify-between w-full md:w-[300px] space-x-1">
       <div className="flex items-center space-x-2">
         {isEditing ? (
@@ -300,7 +300,7 @@ export default function Section({ sectionId, sectionName: initialSectionName, is
     </div>
 
     <div className="flex flex-col flex-1 overflow-hidden">
-      <div className={`flex-1 overflow-y-auto space-y-4 pr-2 transition-all duration-300 ${isEditing ? "max-h-[440px] md:max-h-full" : ""}`}>
+      <div className={`flex-1 overflow-y-auto space-y-4 pr-2 transition-all duration-300 max-h-full`}>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Oval 
@@ -359,7 +359,7 @@ export default function Section({ sectionId, sectionName: initialSectionName, is
         )}
       </div>
 
-      <div className="mt-auto">
+      <div className="">
         {isAddingTask ? (
           <div 
             ref={addTaskRef}

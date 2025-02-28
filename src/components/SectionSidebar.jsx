@@ -1,4 +1,6 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SectionMenu from "./SectionMenu";
+import { faThumbTack } from "@fortawesome/free-solid-svg-icons";
 
 export default function SectionSidebar({ sections, activeSectionId, onSelectSection, onMarkSection, onEditSection, onUpdateSectionName, onDeleteSection, closeSidebar}) {
   return (
@@ -15,13 +17,20 @@ export default function SectionSidebar({ sections, activeSectionId, onSelectSect
                     className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition active:bg-doit-graybtn
                        ${section.id === activeSectionId ? "bg-doit-graybtn" : ""} `}                    
                 >
-                    <div className="w-full"
+                    <div className="flex items-center space-x-2 w-full"
                         onClick={() => {
                             onSelectSection(section.id)
                             closeSidebar()
                         }}
                     >
-                        <span className="text-white text-md font-semibold mr-2 capitalize">
+                        {section.isImportant && (
+                            <FontAwesomeIcon 
+                                icon={faThumbTack} 
+                                className="text-doit-green text-sm"
+                            />
+                        )}
+
+                        <span className="text-white text-md font-semibold capitalize">
                             {section.title.length > 15 ? `${section.title.slice(0, 15)}...` : section.title}
                         </span>
                         <span className="text-gray-400 text-sm font-semibold">

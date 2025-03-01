@@ -33,7 +33,7 @@ export default function TaskEdit({ taskName, taskDescription, setTaskName, setTa
             />
             <input 
               type="text" 
-              placeholder="Description"
+              placeholder="Description (optional)"
               value={taskDescription}
               onChange={(e) => setTaskDescription(e.target.value)}
               className="w-full bg-transparent text-gray-400 rounded-lg focus:outline-none placeholder:text-sm text-sm

@@ -4,7 +4,7 @@ import { faThumbTack } from "@fortawesome/free-solid-svg-icons";
 
 export default function SectionSidebar({ sections, activeSectionId, onSelectSection, onMarkSection, onEditSection, onUpdateSectionName, onDeleteSection, closeSidebar}) {
   return (
-    <div className="flex flex-col w-full space-y-4 text-white p-2 md:py-2 md:px-4">
+    <div className="flex flex-col w-full space-y-4 text-white md:py-2 md:px-4">
         <h3 className="text-gray-400 text-sm">Sections</h3>
             {sections.length === 0 && (
                 <p className="text-white text-md font-semibold">Try creating a section.</p>

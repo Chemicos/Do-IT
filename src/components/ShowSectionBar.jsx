@@ -14,7 +14,7 @@ export default function ShowSectionBar({ sections = [], onSelectSection, activeS
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target) && 
                 !document.querySelector(".section-edit-modal")?.contains(event.target)) {
-                    setIsOpen(false)
+                    closeSidebar()
                 }
         }
 
@@ -36,19 +36,19 @@ export default function ShowSectionBar({ sections = [], onSelectSection, activeS
         setTimeout(() => {
           setIsOpen(false)
         }, 300) 
-      }
+    }
     
-      useEffect(() => {
+    useEffect(() => {
         if (isOpen) {
-          setOverlayClass("opacity-0")
-          setSidebarClass("-translate-x-full")
+            setOverlayClass("opacity-0")
+            setSidebarClass("-translate-x-full")
     
           setTimeout(() => {
             setOverlayClass("opacity-70")
             setSidebarClass("translate-x-0")
           }, 0)
         }
-      }, [isOpen])
+    }, [isOpen])
     
 
   return (
@@ -89,7 +89,7 @@ export default function ShowSectionBar({ sections = [], onSelectSection, activeS
                     <div
                         ref={menuRef}
                         className={`
-                        fixed top-0 left-0 w-[80%] h-full p-4 bg-doit-darkgray text-white z-40
+                        fixed top-0 left-0 w-[300px] min-w-[300px] h-full p-4 bg-doit-darkgray text-white z-40
                         transform transition-transform duration-300
                         ${sidebarClass}
                         `}

@@ -2,13 +2,15 @@ import { faAngleDown, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebaseConfig";
+import { auth, db } from "../../firebaseConfig";
 import { useEffect, useRef, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Navbar({ isDropdownOpen, toggleDropdown, username, onProfileClick }) {
   const [isHovered, setIsHovered] = useState(false)
   const [scaleClass, setScaleClass] = useState("scale-50 opacity-0")
   const [isVisible, setIsVisible] = useState(false)
+  const [avatar, setAvatar] = useState("")
   
   const dropDownRef = useRef(null)
   const navigate = useNavigate()
@@ -44,6 +46,25 @@ export default function Navbar({ isDropdownOpen, toggleDropdown, username, onPro
     }
   }, [isDropdownOpen, toggleDropdown])
 
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      if (auth.currentUser) {
+        try {
+          const userDocRef = doc(db, "users", auth.currentUser.uid)
+          const userDocSnap = await getDoc(userDocRef)
+
+          if (userDocSnap.exists()) {
+            setAvatar(userDocSnap.data().avatar || "")
+          }
+        } catch (error) {
+          console.error("Error fetching avatar:", error)
+        }
+      }
+    }
+
+    fetchAvatar()
+  }, [])
+
   const handleLogout = async () => {
     try {
       await signOut(auth)
@@ -60,8 +81,20 @@ export default function Navbar({ isDropdownOpen, toggleDropdown, username, onPro
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-            
-            <span className="font-semibold">{username}</span>
+          {avatar ? (
+            <img 
+              src={avatar} 
+              alt="user avatar" 
+              className="w-10 h-10 rounded-full"
+            />
+          ) : (
+            <FontAwesomeIcon 
+              icon={faUser}
+              className="text-doit-green text-2xl"
+            />
+          )}
+
+          <span className="hidden md:inline font-semibold">{username}</span>
 
             <FontAwesomeIcon 
                 icon={faAngleDown}
@@ -71,7 +104,7 @@ export default function Navbar({ isDropdownOpen, toggleDropdown, username, onPro
 
             {isVisible && (
                 <div 
-                  className={`flex flex-col items-center absolute top-10 py-2 w-60 border border-doit-grayborder bg-doit-graybtn rounded-lg z-10
+                  className={`flex flex-col items-center absolute top-12 py-2 w-60 border border-doit-grayborder bg-doit-graybtn rounded-lg z-10
                     transform transition-transform ease-in-out ${scaleClass}
                     ${isDropdownOpen ? "visible" : "invisible"}`}
                   ref={dropDownRef}

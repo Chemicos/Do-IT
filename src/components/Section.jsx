@@ -224,7 +224,7 @@ export default function Section({ sectionId, sectionName: initialSectionName, is
   }
 
   return (
-  <div className="flex flex-col mx-auto space-y-4 rounded-lg w-72 md:w-full h-[600px] md:h-full">
+  <div className="flex flex-col mx-auto space-y-4 rounded-lg w-72 md:w-full h-[580px] md:h-full">
     <div className="flex items-center justify-between w-full md:w-[300px] space-x-1">
       <div className="flex items-center space-x-2">
         {isEditing ? (

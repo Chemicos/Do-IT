@@ -1,42 +1,53 @@
-import { faEye, faEyeSlash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../../firebaseConfig";
-import { signInWithEmailAndPassword, updatePassword } from "firebase/auth";
 import Confirmation from "./Confirmation";
-import { RotatingLines } from "react-loader-spinner";
+import { Oval, RotatingLines } from "react-loader-spinner";
+import { deleteUser } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import ConfirmationDeleteAccount from "./ConfirmationDeleteAccount";
 
 export default function UserProfile({ onClose, user, username: initialUsername, onUsernameChange }) {
     const [username, setUsername] = useState(initialUsername)
-    const [oldPassword, setOldPassword] = useState("")
-    const [oldPasswordError, setOldPasswordError] = useState("")
-    const [showOldPassword, setShowOldPassword] = useState(false)
-    const [newPassword, setNewPassword] = useState("")
-    const [newPasswordError, setNewPasswordError] = useState("")
-    const [showNewPassword, setShowNewPassword] = useState(false)
+    const [avatar, setAvatar] = useState("")
+    const [isLoadingAvatar, setIsLoadingAvatar] = useState(false)
 
     const [isSaving, setIsSaving] = useState(false)
     const [showConfirmation, setShowConfirmation] = useState(false)
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         setUsername(initialUsername)
     }, [initialUsername])
 
     useEffect(() => {
-        if (oldPassword == "") {
-            setShowOldPassword(false)
-            setOldPasswordError("")
-        }
-    }, [oldPassword])
+        const fetchAvatar = async () => {
+            if (auth.currentUser) {
+                setIsLoadingAvatar(true)
 
-    useEffect(() => {
-        if (newPassword == "") {
-            setShowNewPassword(false)
-        }
-    }, [newPassword])
+                try {
+                    const userDocRef = doc(db, "users", auth.currentUser.uid)
+                    const userDocSnap = await getDoc(userDocRef)
 
-    const isDisabled = oldPassword == "" || newPassword == ""
+                    if (userDocSnap.exists()) {
+                        setAvatar(userDocSnap.data().avatar || "")
+                    }
+                } catch (error) {
+                    console.error("Error fetching avatar:", error)
+                } finally {
+                    setIsLoadingAvatar(false)
+                }
+            }
+        }
+
+        fetchAvatar()
+    }, [])
+
+    const isDisabled = username == ""
 
     const handleSaveChanges = async () => {
         setIsSaving(true)
@@ -48,42 +59,33 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
                 onUsernameChange(username)
             }
 
-            if (newPassword.trim().length > 0) {
-                if (newPassword.trim().length < 6) {
-                    setNewPasswordError("Password should be at least 6 characters!")
-                    setIsSaving(false)
-                    return
-                }
-            }
-
-            if (newPassword.trim().length > 0) {
-                if (oldPassword.trim().length > 0) {
-                    const userCredential = await signInWithEmailAndPassword(
-                        auth,
-                        user.email,
-                        oldPassword
-                    )
-
-                    await updatePassword(userCredential.user, newPassword)
-                } else {
-                    await updatePassword(auth.currentUser, newPassword)
-                }
-            }
-
             setShowConfirmation(true)
         } catch (error) {
             console.error("Error updating profile:", error)
-
-            if (error.code === "auth/invalid-credential") {
-                setOldPasswordError("Old password is incorrect!")
-            }
-
-            if (error.code === "auth/weak-password") {
-                setNewPasswordError("Password should be at least 6 characters!")
-            }
         } finally {
             setIsSaving(false)
         }
+    }
+
+    const handleDeleteAccount = async () => {
+        if (!auth.currentUser) return
+
+        try {
+            const userId = auth.currentUser.uid
+            
+            await deleteDoc(doc(db, "users", userId))
+
+            const sectionsQuery = query(collection(db, "sections"), where("userId", "==", userId))
+            const sectionsSnapshot = await getDocs(sectionsQuery)
+            sectionsSnapshot.forEach(async (docSnap) => {
+                await deleteDoc(doc(db, "sections", docSnap.id))
+            })
+            await deleteUser(auth.currentUser)
+
+            navigate("/login")            
+        } catch (error) {
+            console.error("Error deleting account:", error)
+        } 
     }
 
     const handleCloseConfirmation = () => {
@@ -105,86 +107,62 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
                 <FontAwesomeIcon icon={faX} /> 
             </button>
 
-            {showConfirmation ? (
+            {showDeleteConfirmation ? (
+                <ConfirmationDeleteAccount 
+                    onCancel={() => setShowDeleteConfirmation(false)}
+                    onConfirm={handleDeleteAccount}
+                />
+            ) : showConfirmation ? (
                 <Confirmation onClose={handleCloseConfirmation} />
             ) : (
                 <div className="flex flex-col w-full p-0 md:p-4 my-auto gap-6 items-center">
-                    <h1 className="text-2xl text-gray-400">Edit your profile</h1>
+                    {isLoadingAvatar ? (
+                        <Oval
+                            height="50"
+                            width="50"
+                            color="#4fa94d"
+                            strokeWidth="5"
+                            visible={true}
+                        />
+                    ) : avatar ? (
+                        <img 
+                            src={avatar} 
+                            alt="user avatar" 
+                            className="w-32 h-32 md:w-20 md:h-20 rounded-full"
+                        />
+                    ) : (
+                        <div className="w-20 h-20 flex items-center justify-center bg-gray-700 text-gray-400 rounded-full">
+                            No Avatar
+                        </div>
+                    )}
 
                     <p className="text-2xl">{username}</p>
 
                     <div className="flex flex-col w-full px-4 md:px-8 gap-6">
                         <div className="flex flex-col gap-2">
+                                <button 
+                                    className="text-red-500 font-semibold w-full py-2 rounded-md active:bg-doit-graybtn md:hover:bg-doit-graybtn transition duration-150"
+                                    onClick={() => setShowDeleteConfirmation(true)}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} className="mr-2" />
+                                    Delete Account
+                                </button>
+
                             <label className="text-gray-400">Username</label>
-
-                            <div className="relative">
-                                <input 
-                                    type="text" 
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full bg-doit-darkgray text-white rounded-md border border-gray-500 focus:outline-none focus:ring-doit-green focus:ring-1
-                                        py-3 pl-3 pr-10 hover:border-doit-green transition"
-                                />
-                            </div>                    
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                            <label className="text-gray-400">Old Password</label>
-                            <div className="relative">
-                                <input 
-                                    type={showOldPassword ? "text" : "password"} 
-                                    value={oldPassword}
-                                    onChange={(e) => {
-                                        setOldPassword(e.target.value) 
-                                        setOldPasswordError("")
-                                    }}
-                                    className="w-full bg-doit-darkgray text-white rounded-md border border-gray-500 focus:outline-none focus:ring-doit-green focus:ring-1
-                                        py-3 pl-3 pr-12 hover:border-doit-green transition"
-                                />
-
-                                <button 
-                                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 text-xl hover:text-white"
-                                    onClick={() => oldPassword && setShowOldPassword(!showOldPassword)}
-                                >
-                                    <FontAwesomeIcon icon={showOldPassword ? faEyeSlash : faEye} />
-
-                                </button>
-                            </div>                
-                            {oldPasswordError && (
-                                <p className="text-pink-600 text-sm">{oldPasswordError}</p>
-                            )}
-                        </div> 
-
-                        <div className="flex flex-col gap-2">
-                            <label className="text-gray-400">New Password</label>
-                            <div className="relative">
-                                <input
-                                type={showNewPassword ? "text" : "password"}
-                                value={newPassword}
-                                onChange={(e) => {
-                                    setNewPassword(e.target.value)
-                                    setNewPasswordError("")
-                                }}
+                            
+                            <input 
+                                type="text" 
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 className="w-full bg-doit-darkgray text-white rounded-md border border-gray-500 focus:outline-none focus:ring-doit-green focus:ring-1
-                                    py-3 pl-3 pr-12 hover:border-doit-green transition"
-                                />
-
-                                <button 
-                                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 text-xl hover:text-white"
-                                    onClick={() => newPassword && setShowNewPassword(!showNewPassword)}
-                                >
-                                    <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
-                                </button>
-                            </div>
-                            {newPasswordError && (
-                                <p className="text-pink-600 text-sm">{newPasswordError}</p>
-                            )}
+                                    py-3 pl-3 pr-10 hover:border-doit-green transition"
+                            />                        
                         </div>
                     </div>
 
                     <div className="flex w-full px-8 justify-between mt-auto gap-4">
                         <button 
-                            className="text-gray-400 duration-150 w-full hover:text-white py-2 hover:bg-doit-graybtn rounded-md
+                            className="text-gray-400 duration-150 w-full active:text-white md:hover:text-white py-2 hover:bg-doit-graybtn rounded-md
                             active:bg-doit-graybtn"
                             onClick={onClose}
                         >
@@ -217,7 +195,7 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
                             Save
                         </button>
                     )}
-                    </div>
+                    </div>        
                 </div>
             )}
         </div>

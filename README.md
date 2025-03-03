@@ -1,7 +1,9 @@
 <h1 align="center"> 📝 DoIT</h1>
-<p align="center">
-  An intuitive task manager built with <b>React, Tailwind CSS, and Firebase</b>.
-</p>
+<div align="center">
+  <img src="public/screenshots/login.jpeg" width="400px" height="270px">
+  <img src="public/screenshots/homepageDemo.jpeg" width="400px" height="270px">
+  <p>An intuitive task manager built with <b>React, Tailwind CSS, and Firebase</b>.</p>
+</div>
 
 <h2>🔥 Features</h2>
 <ul>
@@ -78,3 +80,13 @@ VITE_FIREBASE_APP_ID=your_app_id
     <pre><code>npm run dev</code></pre>
   </li>
 </ol>
+
+<h2>Reason?</h2>
+<p>Just wanted to develop a mini-version of the Todoist app cause why not?🙃</p>
+
+<h2>📷 More Screenshots</h2>
+<div align="center">
+  <img src="public/screenshots/emptyHomepage.jpeg" alt="emptyhomepage" width="400px">
+  <img src="public/screenshots/profile.jpeg" alt="" width="400px">
+  <img src="public/screenshots/mobileHomepage.jpeg" alt="" width="">
+</div>

@@ -5,12 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebaseConfig";
 import { useEffect, useRef, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
+import { Oval } from "react-loader-spinner";
 
 export default function Navbar({ isDropdownOpen, toggleDropdown, username, onProfileClick }) {
   const [isHovered, setIsHovered] = useState(false)
   const [scaleClass, setScaleClass] = useState("scale-50 opacity-0")
   const [isVisible, setIsVisible] = useState(false)
   const [avatar, setAvatar] = useState("")
+  const [isLoadingAvatar, setIsLoadingAvatar] = useState(false)
   
   const dropDownRef = useRef(null)
   const navigate = useNavigate()
@@ -49,6 +51,8 @@ export default function Navbar({ isDropdownOpen, toggleDropdown, username, onPro
   useEffect(() => {
     const fetchAvatar = async () => {
       if (auth.currentUser) {
+        setIsLoadingAvatar(true)
+
         try {
           const userDocRef = doc(db, "users", auth.currentUser.uid)
           const userDocSnap = await getDoc(userDocRef)
@@ -58,6 +62,8 @@ export default function Navbar({ isDropdownOpen, toggleDropdown, username, onPro
           }
         } catch (error) {
           console.error("Error fetching avatar:", error)
+        } finally {
+          setIsLoadingAvatar(false)
         }
       }
     }
@@ -81,17 +87,20 @@ export default function Navbar({ isDropdownOpen, toggleDropdown, username, onPro
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {avatar ? (
+          {isLoadingAvatar ? (
+            <Oval
+              height="30"
+              width="30"
+              color="#4fa94d"
+              strokeWidth="5"
+              visible={true}
+            />
+          ) : (
             <img 
               src={avatar} 
               alt="user avatar" 
               className="w-10 h-10 rounded-full"
-            />
-          ) : (
-            <FontAwesomeIcon 
-              icon={faUser}
-              className="text-doit-green text-2xl"
-            />
+            />            
           )}
 
           <span className="hidden md:inline font-semibold">{username}</span>

@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { auth, db, googleProvider } from "../../../firebaseConfig"
 import { Oval } from "react-loader-spinner"
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore"
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +26,7 @@ export default function Login() {
                 const userData = {
                     uid: user.uid,
                     username: user.displayName || "User",
-                    createdAt: new Date(),
+                    createdAt: serverTimestamp(),
                     avatar: user.photoURL || ""
                 }
 

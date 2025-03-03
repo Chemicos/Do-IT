@@ -1,13 +1,10 @@
-import { faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { auth, db } from "../../firebaseConfig";
 import Confirmation from "./Confirmation";
 import { Oval, RotatingLines } from "react-loader-spinner";
-import { deleteUser } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import ConfirmationDeleteAccount from "./ConfirmationDeleteAccount";
 
 export default function UserProfile({ onClose, user, username: initialUsername, onUsernameChange }) {
     const [username, setUsername] = useState(initialUsername)
@@ -16,9 +13,6 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
 
     const [isSaving, setIsSaving] = useState(false)
     const [showConfirmation, setShowConfirmation] = useState(false)
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
-
-    const navigate = useNavigate()
 
     useEffect(() => {
         setUsername(initialUsername)
@@ -67,27 +61,6 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
         }
     }
 
-    const handleDeleteAccount = async () => {
-        if (!auth.currentUser) return
-
-        try {
-            const userId = auth.currentUser.uid
-            
-            await deleteDoc(doc(db, "users", userId))
-
-            const sectionsQuery = query(collection(db, "sections"), where("userId", "==", userId))
-            const sectionsSnapshot = await getDocs(sectionsQuery)
-            sectionsSnapshot.forEach(async (docSnap) => {
-                await deleteDoc(doc(db, "sections", docSnap.id))
-            })
-            await deleteUser(auth.currentUser)
-
-            navigate("/login")            
-        } catch (error) {
-            console.error("Error deleting account:", error)
-        } 
-    }
-
     const handleCloseConfirmation = () => {
         onClose()
     }
@@ -107,12 +80,7 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
                 <FontAwesomeIcon icon={faX} /> 
             </button>
 
-            {showDeleteConfirmation ? (
-                <ConfirmationDeleteAccount 
-                    onCancel={() => setShowDeleteConfirmation(false)}
-                    onConfirm={handleDeleteAccount}
-                />
-            ) : showConfirmation ? (
+            {showConfirmation ? (
                 <Confirmation onClose={handleCloseConfirmation} />
             ) : (
                 <div className="flex flex-col w-full p-0 md:p-4 my-auto gap-6 items-center">
@@ -140,14 +108,6 @@ export default function UserProfile({ onClose, user, username: initialUsername, 
 
                     <div className="flex flex-col w-full px-4 md:px-8 gap-6">
                         <div className="flex flex-col gap-2">
-                                <button 
-                                    className="text-red-500 font-semibold w-full py-2 rounded-md active:bg-doit-graybtn md:hover:bg-doit-graybtn transition duration-150"
-                                    onClick={() => setShowDeleteConfirmation(true)}
-                                >
-                                    <FontAwesomeIcon icon={faTrash} className="mr-2" />
-                                    Delete Account
-                                </button>
-
                             <label className="text-gray-400">Username</label>
                             
                             <input 

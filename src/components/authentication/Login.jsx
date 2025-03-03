@@ -49,9 +49,6 @@ export default function Login() {
             <h1 className="text-4xl font-bold text-center text-white">
                 Do<span className="text-green-500">IT</span>
             </h1>
-            <h2 className="text-2xl font-semibold text-white text-center">
-                Welcome
-            </h2>
             <p className="text-sm text-center text-gray-300">
                 Sign in with your Google account to access the app.
             </p>

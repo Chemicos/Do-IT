@@ -1,6 +1,7 @@
 <h1 align="center"> 📝 DoIT</h1>
 <div align="center">
   <p><i>An intuitive task manager built with <b>React, Tailwind CSS, and Firebase</b></i>.</p>
+  <img src="public/screenshots/login.jpeg" width="400px" height="270px">
   <img src="public/screenshots/homepageDemo.jpeg" width="400px" height="270px">
 </div>
 

@@ -8,8 +8,8 @@
   <li>⚙️ Create, edit, and delete sections and tasks.</li>
   <li>📌 Mark tasks and sections as important.</li>
   <li>🔥 Real-time sync with Firebase.</li>
-  <li>👤 User authentication via Firebase Authentication.</li>
-  <li>🔧 Change the username and password of your account.</li>
+  <li>👤 Google authentication via Firebase.</li>
+  <li>🔧 Change the username of your account.</li>
 </ul>
 
 <h2>🛠️ Technologies Used</h2>
